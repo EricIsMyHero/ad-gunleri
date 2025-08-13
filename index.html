@@ -1,73 +1,242 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-<meta charset="UTF-8">
-<title>Ad günü xatırlatıcı</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Günü Xatırladıcı</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #1877f2;
+        }
+
+        .form-container, .list-container {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #ddd;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #1877f2;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #1877f2;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #166fe5;
+            transform: translateY(-2px);
+        }
+
+        #subscribeBtn {
+            background-color: #42b72a;
+            margin-bottom: 20px;
+        }
+
+        #subscribeBtn:hover {
+            background-color: #36a420;
+        }
+
+        #birthdayList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #birthdayList li {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .birthday-date {
+            font-weight: bold;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
-<h1>Ad günü xatırlatıcı</h1>
 
-<button id="subscribeBtn">Bildirişlərə abunə ol</button>
+<div class="container">
+    <h1>Ad Günü Xatırladıcı</h1>
+    <button id="subscribeBtn">Bildirişlərə Abunə Ol</button>
 
-<h2>Yeni ad günü əlavə et</h2>
-<input type="text" id="name" placeholder="Ad">
-<input type="number" id="day" placeholder="Gün" min="1" max="31">
-<input type="number" id="month" placeholder="Ay" min="1" max="12">
-<button id="addBtn">Əlavə et</button>
+    <div class="form-container">
+        <h2>Yeni Ad Günü Əlavə Et</h2>
+        <div class="input-group">
+            <input type="text" id="name" placeholder="Ad və Soyad">
+            <input type="number" id="day" placeholder="Gün" min="1" max="31">
+            <input type="number" id="month" placeholder="Ay" min="1" max="12">
+        </div>
+        <button id="addBtn">Əlavə Et</button>
+    </div>
+
+    <div class="list-container">
+        <h2>Qeyd Edilən Ad Günləri</h2>
+        <ul id="birthdayList"></ul>
+    </div>
+</div>
 
 <script>
-const publicVapidKey = 'SENIN_PUBLIC_VAPID_KEY';
+    const publicVapidKey = 'SENIN_PUBLIC_VAPID_KEY';
 
-// Service Worker qeydiyyatı
-if('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').then(reg => {
-    console.log('Service Worker qeydiyyatdan keçdi');
-  });
-}
-
-// Abunə ol
-document.getElementById('subscribeBtn').addEventListener('click', async () => {
-  const registration = await navigator.serviceWorker.ready;
-  const subscription = await registration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
-  });
-
-  await fetch('/subscribe', {
-    method: 'POST',
-    body: JSON.stringify(subscription),
-    headers: { 'Content-Type': 'application/json' }
-  });
-
-  alert('Bildirişlərə abunə oldunuz!');
-});
-
-// Yeni ad günü əlavə et
-document.getElementById('addBtn').addEventListener('click', async () => {
-  const name = document.getElementById('name').value;
-  const day = parseInt(document.getElementById('day').value);
-  const month = parseInt(document.getElementById('month').value);
-
-  if(name && day && month) {
-    const res = await fetch('/add-birthday', {
-      method: 'POST',
-      body: JSON.stringify({ name, day, month }),
-      headers: { 'Content-Type': 'application/json' }
+    document.addEventListener('DOMContentLoaded', () => {
+        registerServiceWorker();
+        fetchAndRenderBirthdays();
     });
-    const data = await res.json();
-    alert(data.message);
-  } else {
-    alert('Bütün sahələri doldurun!');
-  }
-});
 
-// Helper
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
-}
+    // Service Worker qeydiyyatı
+    function registerServiceWorker() {
+        if('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                console.log('Service Worker qeydiyyatdan keçdi');
+            }).catch(err => console.error('Service Worker qeydiyyatı uğursuz oldu:', err));
+        }
+    }
+
+    // Abunə ol
+    document.getElementById('subscribeBtn').addEventListener('click', async () => {
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+            });
+
+            await fetch('/subscribe', {
+                method: 'POST',
+                body: JSON.stringify(subscription),
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            alert('Bildirişlərə uğurla abunə oldunuz!');
+        } catch (err) {
+            console.error('Abunə olmaq mümkün olmadı:', err);
+            alert('Bildirişlərə abunə olmaq mümkün olmadı.');
+        }
+    });
+
+    // Yeni ad günü əlavə et
+    document.getElementById('addBtn').addEventListener('click', async () => {
+        const nameInput = document.getElementById('name');
+        const dayInput = document.getElementById('day');
+        const monthInput = document.getElementById('month');
+
+        const name = nameInput.value;
+        const day = parseInt(dayInput.value);
+        const month = parseInt(monthInput.value);
+
+        if(name && day && month) {
+            try {
+                const res = await fetch('/add-birthday', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, day, month }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message);
+                    nameInput.value = '';
+                    dayInput.value = '';
+                    monthInput.value = '';
+                    fetchAndRenderBirthdays(); // Siyahını yenilə
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (err) {
+                alert(`Xəta baş verdi: ${err.message}`);
+            }
+        } else {
+            alert('Bütün sahələri doldurun!');
+        }
+    });
+
+    // Ad günlərini gətir və göstər
+    async function fetchAndRenderBirthdays() {
+        try {
+            const res = await fetch('/birthdays');
+            const birthdays = await res.json();
+            const birthdayList = document.getElementById('birthdayList');
+            birthdayList.innerHTML = ''; // Köhnə siyahını təmizlə
+
+            if (birthdays.length === 0) {
+                birthdayList.innerHTML = '<li>Heç bir ad günü qeyd edilməyib.</li>';
+            } else {
+                birthdays.forEach(b => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${b.name}</span>
+                        <span class="birthday-date">${String(b.day).padStart(2, '0')}.${String(b.month).padStart(2, '0')}</span>
+                    `;
+                    birthdayList.appendChild(li);
+                });
+            }
+        } catch (err) {
+            console.error('Ad günlərini yükləmək mümkün olmadı:', err);
+            const birthdayList = document.getElementById('birthdayList');
+            birthdayList.innerHTML = '<li>Ad günlərini yükləyərkən xəta baş verdi.</li>';
+        }
+    }
+
+
+    // Helper funksiya
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+    }
 </script>
 </body>
 </html>
