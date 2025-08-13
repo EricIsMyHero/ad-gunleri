@@ -7,21 +7,20 @@ const app = express();
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// VAPID açarları (öncə generate et)
-// web-push generate-vapid-keys
+// VAPID açarları
 const publicVapidKey = 'SENIN_PUBLIC_VAPID_KEY';
 const privateVapidKey = 'SENIN_PRIVATE_VAPID_KEY';
 
 webpush.setVapidDetails('mailto:you@example.com', publicVapidKey, privateVapidKey);
 
-// Test istifadəçiləri (ad günləri)
+// Hazır test istifadəçiləri
 let birthdays = [
   { name: "Ali", day: 13, month: 8 },
   { name: "Leyla", day: 14, month: 8 },
   { name: "Nigar", day: 15, month: 8 }
 ];
 
-let subscriptions = []; // istifadəçi subscription-ları
+let subscriptions = [];
 
 // Frontend-dən abunə qəbul et
 app.post('/subscribe', (req, res) => {
@@ -29,8 +28,19 @@ app.post('/subscribe', (req, res) => {
   res.status(201).json({});
 });
 
+// Yeni ad günü əlavə et
+app.post('/add-birthday', (req, res) => {
+  const { name, day, month } = req.body;
+  if(name && day && month) {
+    birthdays.push({ name, day, month });
+    res.status(201).json({ message: `${name} əlavə edildi!` });
+  } else {
+    res.status(400).json({ message: 'Bütün sahələr doldurulmalıdır!' });
+  }
+});
+
 // Ad günü yoxlama və göndərmə
-cron.schedule('* * * * *', () => { // hər dəqiqə yoxlayır (test üçün)
+cron.schedule('* * * * *', () => { // test üçün hər dəqiqə
   const today = new Date();
   const day = today.getDate();
   const month = today.getMonth() + 1;
