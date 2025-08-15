@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Günü Xatırladıcı</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <h1>Ad Günü Xatırladıcı 🎂</h1>
+        <button id="enable-notifications" class="notification-btn">Bildirişləri Aktiv Et</button>
+    </header>
+
+    <main class="container">
+        <div class="form-container card">
+            <h2>Yeni Ad Günü Əlavə Et</h2>
+            <form id="birthday-form">
+                <div class="form-group">
+                    <label for="name">Ad və Soyad:</label>
+                    <input type="text" id="name" placeholder="Məs: Əli Vəliyev" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Doğum Tarixi:</label>
+                    <input type="date" id="date" required>
+                </div>
+                <button type="submit" class="submit-btn">Əlavə et</button>
+            </form>
+        </div>
+
+        <div class="list-container">
+            <h2>Qarşıdan Gələn Ad Günləri</h2>
+            <div id="birthday-list" class="birthday-grid">
+                <!-- Siyahı buraya yüklənəcək -->
+            </div>
+        </div>
+    </main>
+
+    <script src="client.js"></script>
+</body>
+</html>
