@@ -3,113 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Kateqoriyaları</title>
+  <title>Musiqi Saytı</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #f7f7f7;
+      background: #f9f9f9;
     }
-    .category-bar {
+    header {
+      background: #222;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+    }
+    nav {
       display: flex;
-      overflow-x: auto;
-      white-space: nowrap;
+      justify-content: center;
       background: #333;
     }
-    .category-bar button {
+    nav button {
       flex: 1;
-      padding: 12px;
+      padding: 1rem;
       border: none;
-      outline: none;
-      color: white;
       background: #333;
+      color: white;
+      font-size: 1rem;
       cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s ease;
     }
-    .category-bar button:hover, 
-    .category-bar button.active {
-      background: #444;
+    nav button.active {
+      background: #555;
     }
-    .video-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 12px;
-      padding: 12px;
+    section {
+      display: none;
+      padding: 1rem;
     }
-    .video-card {
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease;
-    }
-    .video-card:hover {
-      transform: scale(1.02);
-    }
-    video {
-      width: 100%;
+    section.active {
       display: block;
     }
+    iframe {
+      width: 100%;
+      height: 315px;
+      max-width: 560px;
+      display: block;
+      margin: 0 auto 1rem;
+    }
+
+    /* Mobil uyğunlaşdırma */
     @media (max-width: 600px) {
-      .category-bar button {
-        font-size: 14px;
-        padding: 10px;
+      nav button {
+        font-size: 0.9rem;
+        padding: 0.7rem;
+      }
+      iframe {
+        height: 200px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="category-bar">
-    <button class="active" onclick="filterVideos('all')">Hamısı</button>
-    <button onclick="filterVideos('funny')">Gülməli</button>
-    <button onclick="filterVideos('music')">Musiqi</button>
-    <button onclick="filterVideos('sport')">İdman</button>
-  </div>
+  <header>
+    <h1>Musiqi Saytı</h1>
+  </header>
 
-  <div class="video-container">
-    <div class="video-card" data-category="funny">
-      <video controls>
-        <source src="video1.mp4" type="video/mp4">
-      </video>
-    </div>
-    <div class="video-card" data-category="music">
-      <video controls>
-        <source src="video2.mp4" type="video/mp4">
-      </video>
-    </div>
-    <div class="video-card" data-category="sport">
-      <video controls>
-        <source src="video3.mp4" type="video/mp4">
-      </video>
-    </div>
-    <div class="video-card" data-category="funny">
-      <video controls>
-        <source src="video4.mp4" type="video/mp4">
-      </video>
-    </div>
-  </div>
+  <nav>
+    <button onclick="showSection('videolar')" id="btn-videolar">Videolar</button>
+    <button onclick="showSection('mahnilar')" id="btn-mahnilar">Mahnılar</button>
+    <button onclick="showSection('haqqinda')" id="btn-haqqinda">Haqqında</button>
+  </nav>
+
+  <main>
+    <section id="videolar">
+      <h2>Videolar</h2>
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/oHg5SJYRHA0" allowfullscreen></iframe>
+    </section>
+
+    <section id="mahnilar">
+      <h2>Mahnılar</h2>
+      <p>Burada sevdiyiniz mahnılar olacaq.</p>
+    </section>
+
+    <section id="haqqinda">
+      <h2>Haqqında</h2>
+      <p>Bu sayt musiqi sevərlər üçün hazırlanıb.</p>
+    </section>
+  </main>
 
   <script>
-    function filterVideos(category) {
-      const buttons = document.querySelectorAll('.category-bar button');
-      buttons.forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-
-      const videos = document.querySelectorAll('.video-card');
-      videos.forEach(video => {
-        if (category === 'all' || video.dataset.category === category) {
-          video.style.display = 'block';
-        } else {
-          video.style.display = 'none';
-        }
-      });
+    function showSection(id) {
+      // bütün bölmələri gizlə
+      document.querySelectorAll("main section").forEach(sec => sec.classList.remove("active"));
+      // bütün düymələrdən active sinifini sil
+      document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+      // seçilən bölməni göstər
+      document.getElementById(id).classList.add("active");
+      // seçilən düyməni aktiv et
+      document.querySelector(`#btn-${id}`).classList.add("active");
     }
-    // İlk açılışda bütün videolar görünsün
-    filterVideos('all');
+
+    // İlk açılışda "Videolar" bölməsi aktiv olsun
+    window.onload = function() {
+      showSection("videolar");
+    };
   </script>
 </body>
 </html>
