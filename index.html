@@ -23,6 +23,7 @@
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
+            /* Yalnız düymələr vasitəsilə keçid üçün əsas gövdənin sürüşməsinin qarşısını alırıq */
             overflow: hidden;
         }
 
@@ -40,14 +41,22 @@
 
         .main-content {
             height: calc(100vh - 150px);
+            /* ƏSAS DƏYİŞİKLİK: Sürüşməni tamamilə deaktiv edir */
             overflow-y: auto;
             padding: 1rem;
             box-sizing: border-box;
         }
-
+        
+        /* Slider-in özündə sürüşmənin qarşısını alırıq */
+        .slider-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden; /* ƏSAS DƏYİŞİKLİK: Üfüqi sürüşməni ləğv edir */
+        }
+        
         .slider {
             display: flex;
-            width: 300%; /* Üç səhifə üçün 300% */
+            width: 300%;
             transition: transform 0.4s ease;
         }
 
@@ -228,35 +237,37 @@
     <header class="app-header">Video və Səs Paylaşma Platforması 📹🎶</header>
 
     <main class="main-content">
-        <div class="slider" id="slider">
-            <div class="page">
-                <div class="form-container card">
-                    <h2>Yeni Fayl Yüklə</h2>
-                    <form id="file-form">
-                        <div class="form-group">
-                            <label for="title">Fayl Başlığı:</label>
-                            <input type="text" id="title" placeholder="Məs: Sevdiyim mahnı" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="url">Fayl Linki (MP4, MP3 və ya YouTube):</label>
-                            <input type="url" id="url" placeholder="https://...mp4" required>
-                        </div>
-                        <button type="submit" class="submit-btn">Yüklə</button>
-                    </form>
+        <div class="slider-wrapper">
+            <div class="slider" id="slider">
+                <div class="page">
+                    <div class="form-container card">
+                        <h2>Yeni Fayl Yüklə</h2>
+                        <form id="file-form">
+                            <div class="form-group">
+                                <label for="title">Fayl Başlığı:</label>
+                                <input type="text" id="title" placeholder="Məs: Sevdiyim mahnı" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="url">Fayl Linki (MP4, MP3 və ya YouTube):</label>
+                                <input type="url" id="url" placeholder="https://...mp4" required>
+                            </div>
+                            <button type="submit" class="submit-btn">Yüklə</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
 
-            <div class="page">
-                <div class="list-container">
-                    <h2>Yüklənmiş Videolar</h2>
-                    <div id="video-list" class="video-grid"></div>
+                <div class="page">
+                    <div class="list-container">
+                        <h2>Yüklənmiş Videolar</h2>
+                        <div id="video-list" class="video-grid"></div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="page">
-                <div class="list-container">
-                    <h2>Yüklənmiş Səslər</h2>
-                    <div id="audio-list" class="audio-grid"></div>
+                <div class="page">
+                    <div class="list-container">
+                        <h2>Yüklənmiş Səslər</h2>
+                        <div id="audio-list" class="audio-grid"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -301,7 +312,6 @@
             addFileCard(fileData);
             form.reset();
 
-            // Yükləndikdən sonra avtomatik olaraq müvafiq səhifəyə keçmək
             if (isAudioUrl(url)) {
                 btnRight.click();
             } else {
