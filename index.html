@@ -13,7 +13,7 @@
             --card-bg-color: #ffffff;
             --text-color: #333;
             --light-text-color: #fff;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
             --border-radius: 12px;
         }
         body {
@@ -21,47 +21,38 @@
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            overflow: hidden;
         }
         .app-header {
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             color: var(--light-text-color);
-            padding: 1.5rem 2rem;
+            padding: 1.2rem 2rem;
             text-align: center;
             box-shadow: var(--shadow);
+            font-size: 1.6rem;
+        }
+        .slider {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            width: 200%;
+            transition: transform 0.4s ease;
         }
-        .app-header h1 { margin: 0; font-size: 1.8rem; }
-        .notification-btn {
-            background-color: transparent;
-            color: var(--light-text-color);
-            border: 2px solid var(--light-text-color);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .notification-btn:hover, .notification-btn:disabled {
-            background-color: var(--light-text-color);
-            color: var(--primary-color);
+        .page {
+            width: 100%;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            padding: 1.5rem;
+            box-sizing: border-box;
         }
         .card {
             background: var(--card-bg-color);
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
         .form-container h2, .list-container h2 {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             color: var(--primary-color);
         }
         .form-group { margin-bottom: 1rem; }
@@ -90,13 +81,13 @@
         .video-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
+            gap: 1.2rem;
         }
         .video-card {
             background: var(--card-bg-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            padding: 1rem;
+            padding: 0.8rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -108,23 +99,22 @@
             border-radius: var(--border-radius);
             margin-bottom: 0.5rem;
         }
-        .video-card:hover { transform: translateY(-5px); }
         .video-title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 600;
-            margin: 0.5rem 0;
+            margin: 0.3rem 0;
             color: var(--primary-color);
         }
         .delete-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             background: #ff4d4d;
             color: white;
             border: none;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
@@ -132,43 +122,75 @@
             transition: opacity 0.3s ease;
         }
         .video-card:hover .delete-btn { opacity: 1; }
+        .nav-buttons {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+        .nav-btn {
+            background: var(--card-bg-color);
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-size: 1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        .nav-btn.active {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-text-color);
+        }
     </style>
 </head>
 <body>
-    <header class="app-header">
-        <h1>Video Paylaş Platforması 📹</h1>
-        <button id="enable-notifications" class="notification-btn">Bildirişləri Aktiv Et</button>
-    </header>
+    <header class="app-header">Video Paylaş Platforması 📹</header>
 
-    <main class="container">
-        <!-- Video yükləmə formu -->
-        <div class="form-container card">
-            <h2>Yeni Video Yüklə</h2>
-            <form id="video-form">
-                <div class="form-group">
-                    <label for="title">Video Başlığı:</label>
-                    <input type="text" id="title" placeholder="Məs: Tətil xatirələri" required>
-                </div>
-                <div class="form-group">
-                    <label for="url">Video Linki (MP4 və ya YouTube embed):</label>
-                    <input type="url" id="url" placeholder="Məs: https://...mp4" required>
-                </div>
-                <button type="submit" class="submit-btn">Yüklə</button>
-            </form>
+    <div class="slider" id="slider">
+        <!-- Səhifə 1: Video yükləmə -->
+        <div class="page">
+            <div class="form-container card">
+                <h2>Yeni Video Yüklə</h2>
+                <form id="video-form">
+                    <div class="form-group">
+                        <label for="title">Video Başlığı:</label>
+                        <input type="text" id="title" placeholder="Məs: Tətil xatirələri" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="url">Video Linki (MP4 və ya YouTube embed):</label>
+                        <input type="url" id="url" placeholder="https://...mp4" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Yüklə</button>
+                </form>
+            </div>
         </div>
 
-        <!-- Yüklənmiş videolar -->
-        <div class="list-container">
-            <h2>Yüklənmiş Videolar</h2>
-            <div id="video-list" class="video-grid"></div>
+        <!-- Səhifə 2: Videolar -->
+        <div class="page">
+            <div class="list-container">
+                <h2>Yüklənmiş Videolar</h2>
+                <div id="video-list" class="video-grid"></div>
+            </div>
         </div>
-    </main>
+    </div>
+
+    <!-- Naviqasiya düymələri -->
+    <div class="nav-buttons">
+        <button class="nav-btn active" id="btn-left">Yükləmə</button>
+        <button class="nav-btn" id="btn-right">Videolar</button>
+    </div>
 
     <script>
         const form = document.getElementById('video-form');
         const videoList = document.getElementById('video-list');
+        const slider = document.getElementById('slider');
+        const btnLeft = document.getElementById('btn-left');
+        const btnRight = document.getElementById('btn-right');
 
-        // LocalStorage-dən videoları yüklə
         let videos = JSON.parse(localStorage.getItem('videos') || '[]');
         videos.forEach(addVideoCard);
 
@@ -196,15 +218,24 @@
                 <h3 class="video-title">${videoData.title}</h3>
                 <button class="delete-btn">×</button>
             `;
-
             card.querySelector('.delete-btn').addEventListener('click', () => {
                 videos = videos.filter(v => v.url !== videoData.url);
                 localStorage.setItem('videos', JSON.stringify(videos));
                 videoList.removeChild(card);
             });
-
             videoList.appendChild(card);
         }
+
+        btnLeft.addEventListener('click', () => {
+            slider.style.transform = "translateX(0)";
+            btnLeft.classList.add('active');
+            btnRight.classList.remove('active');
+        });
+        btnRight.addEventListener('click', () => {
+            slider.style.transform = "translateX(-50%)";
+            btnRight.classList.add('active');
+            btnLeft.classList.remove('active');
+        });
     </script>
 </body>
 </html>
