@@ -3,41 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ad Günü Xatırladıcı</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
+    <title>Video Paylaş Platforması</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --background-color: #f0f2f5;
+            --card-bg-color: #ffffff;
+            --text-color: #333;
+            --light-text-color: #fff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .app-header {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-text-color);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-header h1 { margin: 0; font-size: 1.8rem; }
+        .notification-btn {
+            background-color: transparent;
+            color: var(--light-text-color);
+            border: 2px solid var(--light-text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .notification-btn:hover, .notification-btn:disabled {
+            background-color: var(--light-text-color);
+            color: var(--primary-color);
+        }
+        .card {
+            background: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        .form-container h2, .list-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-text-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .submit-btn:hover { transform: translateY(-2px); }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        .video-card {
+            background: var(--card-bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        .video-card video {
+            width: 100%;
+            border-radius: var(--border-radius);
+            margin-bottom: 0.5rem;
+        }
+        .video-card:hover { transform: translateY(-5px); }
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+            color: var(--primary-color);
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .video-card:hover .delete-btn { opacity: 1; }
+    </style>
 </head>
 <body>
     <header class="app-header">
-        <h1>Ad Günü Xatırladıcı 🎂</h1>
+        <h1>Video Paylaş Platforması 📹</h1>
         <button id="enable-notifications" class="notification-btn">Bildirişləri Aktiv Et</button>
     </header>
 
     <main class="container">
+        <!-- Video yükləmə formu -->
         <div class="form-container card">
-            <h2>Yeni Ad Günü Əlavə Et</h2>
-            <form id="birthday-form">
+            <h2>Yeni Video Yüklə</h2>
+            <form id="video-form">
                 <div class="form-group">
-                    <label for="name">Ad və Soyad:</label>
-                    <input type="text" id="name" placeholder="Məs: Əli Vəliyev" required>
+                    <label for="title">Video Başlığı:</label>
+                    <input type="text" id="title" placeholder="Məs: Tətil xatirələri" required>
                 </div>
                 <div class="form-group">
-                    <label for="date">Doğum Tarixi:</label>
-                    <input type="date" id="date" required>
+                    <label for="url">Video Linki (MP4 və ya YouTube embed):</label>
+                    <input type="url" id="url" placeholder="Məs: https://...mp4" required>
                 </div>
-                <button type="submit" class="submit-btn">Əlavə et</button>
+                <button type="submit" class="submit-btn">Yüklə</button>
             </form>
         </div>
 
+        <!-- Yüklənmiş videolar -->
         <div class="list-container">
-            <h2>Qarşıdan Gələn Ad Günləri</h2>
-            <div id="birthday-list" class="birthday-grid">
-                <!-- Siyahı buraya yüklənəcək -->
-            </div>
+            <h2>Yüklənmiş Videolar</h2>
+            <div id="video-list" class="video-grid"></div>
         </div>
     </main>
 
-    <script src="client.js"></script>
+    <script>
+        const form = document.getElementById('video-form');
+        const videoList = document.getElementById('video-list');
+
+        // LocalStorage-dən videoları yüklə
+        let videos = JSON.parse(localStorage.getItem('videos') || '[]');
+        videos.forEach(addVideoCard);
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const url = document.getElementById('url').value;
+
+            const videoData = { title, url };
+            videos.push(videoData);
+            localStorage.setItem('videos', JSON.stringify(videos));
+
+            addVideoCard(videoData);
+            form.reset();
+        });
+
+        function addVideoCard(videoData) {
+            const card = document.createElement('div');
+            card.classList.add('video-card');
+            card.innerHTML = `
+                <video controls>
+                    <source src="${videoData.url}" type="video/mp4">
+                    Brauzeriniz video dəstəkləmir.
+                </video>
+                <h3 class="video-title">${videoData.title}</h3>
+                <button class="delete-btn">×</button>
+            `;
+
+            card.querySelector('.delete-btn').addEventListener('click', () => {
+                videos = videos.filter(v => v.url !== videoData.url);
+                localStorage.setItem('videos', JSON.stringify(videos));
+                videoList.removeChild(card);
+            });
+
+            videoList.appendChild(card);
+        }
+    </script>
 </body>
 </html>
