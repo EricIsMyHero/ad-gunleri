@@ -53,7 +53,7 @@
         
         .slider {
             display: flex;
-            width: 500%; /* 5 səhifə üçün 500% */
+            width: 500%;
             transition: transform 0.4s ease;
         }
 
@@ -316,18 +316,18 @@
         const btnAudioMine = document.getElementById('btn-audio-mine');
         const btnUpload = document.getElementById('btn-upload');
 
-        // Bütün siyahılar üçün elementlər
         const videoListAll = document.getElementById('video-list-all');
         const audioListAll = document.getElementById('audio-list-all');
         const videoListMine = document.getElementById('video-list-mine');
         const audioListMine = document.getElementById('audio-list-mine');
 
-        // İstifadəçi ID-si yaratmaq və ya mövcud olanı istifadə etmək
         const currentUser = localStorage.getItem('userId') || `user_${Math.random().toString(36).substr(2, 9)}`;
         localStorage.setItem('userId', currentUser);
 
         let files = JSON.parse(localStorage.getItem('files') || '[]');
-        files.forEach(addFileCard);
+        
+        // Səhifə yüklənəndə bütün kartları yenidən yaradırıq
+        refreshLists();
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -335,7 +335,7 @@
             const url = document.getElementById('url').value;
 
             const fileData = { 
-                id: Date.now(), // Hər fayl üçün unikal ID
+                id: Date.now(),
                 title, 
                 url,
                 ownerId: currentUser
@@ -344,7 +344,7 @@
             files.push(fileData);
             localStorage.setItem('files', JSON.stringify(files));
 
-            addFileCard(fileData);
+            refreshLists();
             form.reset();
 
             if (isAudioUrl(url)) {
@@ -377,6 +377,7 @@
             const isOwner = fileData.ownerId === currentUser;
 
             const card = document.createElement('div');
+            card.setAttribute('data-id', fileData.id);
             card.classList.add('card');
             
             let mediaElement = '';
@@ -415,37 +416,34 @@
                 ${deleteBtnHTML}
             `;
             
+            // Ümumi siyahıya əlavə etmək üçün yeni bir klon yaradılır.
+            const allCard = card.cloneNode(true);
+            allCard.setAttribute('data-id', fileData.id); // Yeni kart üçün data-id təyin et
+            
             // Hər iki siyahıya əlavə et
             if (isAudio) {
-                audioListAll.prepend(card.cloneNode(true));
+                audioListAll.prepend(allCard);
                 if (isOwner) audioListMine.prepend(card);
             } else {
-                videoListAll.prepend(card.cloneNode(true));
+                videoListAll.prepend(allCard);
                 if (isOwner) videoListMine.prepend(card);
             }
             
             // Silmə düyməsinə klik funksiyasını əlavə et
-            if (isOwner) {
-                const deleteBtns = card.querySelectorAll('.delete-btn');
-                deleteBtns.forEach(btn => {
+            const deleteButtons = card.querySelectorAll('.delete-btn');
+            if (deleteButtons.length > 0) {
+                 deleteButtons.forEach(btn => {
                     btn.addEventListener('click', () => {
                         const fileId = parseInt(btn.getAttribute('data-id'));
                         files = files.filter(f => f.id !== fileId);
                         localStorage.setItem('files', JSON.stringify(files));
-                        
-                        // Səhifələri yeniləməyə ehtiyac yoxdur, sadəcə elementləri silirik
-                        document.querySelector(`.video-card[data-id="${fileId}"]`)?.remove();
-                        document.querySelector(`.audio-card[data-id="${fileId}"]`)?.remove();
-
-                        // Həmçinin ümumi siyahıdan da silmək
-                        const allCards = document.querySelectorAll(`[data-id="${fileId}"]`);
-                        allCards.forEach(c => c.remove());
+                        refreshLists(); // Siyahıları yenidən çəkmək 
                     });
                 });
             }
+           
         }
         
-        // Naviqasiya düymələri
         function setActiveButton(activeBtn, ...inactiveBtns) {
             activeBtn.classList.add('active');
             inactiveBtns.forEach(btn => btn.classList.remove('active'));
@@ -472,7 +470,6 @@
             setActiveButton(btnUpload, btnVideoAll, btnAudioAll, btnVideoMine, btnAudioMine);
         });
 
-        // Təkcə sahibinin görə biləcəyi üçün əlavə funksiyalar
         function refreshLists() {
             videoListAll.innerHTML = '';
             audioListAll.innerHTML = '';
@@ -481,8 +478,6 @@
             files.forEach(addFileCard);
         }
 
-        // Başlanğıcda bütün siyahıları yeniləyirik
-        refreshLists();
     </script>
 </body>
 </html>
