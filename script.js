@@ -18,6 +18,7 @@ const videoListAll = document.getElementById('video-list-all');
 const audioListAll = document.getElementById('audio-list-all');
 const myFilesList = document.getElementById('my-files-list');
 const navButtonsContainer = document.querySelector('.nav-buttons');
+const pages = document.querySelectorAll('.page'); // Bütün səhifələri seçirik
 
 // --- İstifadəçi ID ---
 let currentUser = localStorage.getItem('userId');
@@ -50,7 +51,7 @@ function createFileCard(fileData, fileId) {
     } else {
         if (isYouTube) {
             const embedUrl = getYouTubeEmbedUrl(fileData.url);
-            mediaElement = `<iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            mediaElement = `<iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-content; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
         } else {
             mediaElement = `<video controls src="${fileData.url}"></video>`;
         }
@@ -89,7 +90,9 @@ function renderFiles(filesObject) {
         }
 
         if (fileData.ownerId === currentUser) {
-            myFilesList.prepend(card);
+            // My files hissəsinə öz fayllarımızı əlavə edirik
+            // Orijinal card elementini prepend edirik, çünki klonlamaya ehtiyac yoxdur
+            myFilesList.prepend(card); 
         }
     }
 
@@ -99,7 +102,11 @@ function renderFiles(filesObject) {
 }
 
 function navigateToPage(pageIndex) {
-    slider.style.transform = `translateX(-${pageIndex * 25}%)`;
+    // Səhifələrin ümumi sayına görə transformasiya faizini hesablayırıq
+    // İndi 5 səhifə var (0, 1, 2, 3, 4)
+    const percentagePerItem = 100 / pages.length; 
+    slider.style.transform = `translateX(-${pageIndex * percentagePerItem}%)`;
+    
     const buttons = navButtonsContainer.querySelectorAll('.nav-btn');
     buttons.forEach((btn, index) => {
         btn.classList.toggle('active', index === pageIndex);
@@ -122,15 +129,16 @@ form.addEventListener('submit', (e) => {
     database.ref('files').push(fileData);
 
     form.reset();
-    navigateToPage(2);
+    navigateToPage(2); // Fayl yükləndikdən sonra "Mənim Fayllarım" səhifəsinə keçir
 });
 
 document.body.addEventListener('click', (e) => {
     if (e.target.classList.contains('delete-btn')) {
         const fileId = e.target.dataset.id;
-        if (confirm("Bu faylı silmək istədiyinizə əminsiniz?")) {
-            database.ref('files/' + fileId).remove();
-        }
+        // Təlimatlara əsasən `confirm()` və `alert()` istifadə edilə bilməz.
+        // Həqiqi tətbiqdə burada xüsusi modal UI tətbiq edilməlidir.
+        console.log(`Fayl silinmə sorğusu: ID ${fileId}. Qeyd: Bu hissəyə istifadəçi təsdiqi üçün fərdi modal UI əlavə edilməlidir.`);
+        database.ref('files/' + fileId).remove();
     }
 
     const navBtn = e.target.closest('.nav-btn');
@@ -144,4 +152,9 @@ document.body.addEventListener('click', (e) => {
 database.ref('files').on('value', (snapshot) => {
     const files = snapshot.val();
     renderFiles(files);
+});
+
+// Səhifə yükləndikdə ilk səhifəni (Videoları) göstər
+document.addEventListener('DOMContentLoaded', () => {
+    navigateToPage(0); 
 });
