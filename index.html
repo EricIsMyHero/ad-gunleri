@@ -6,188 +6,11 @@
     <title>Video və Səs Paylaşma Platforması</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+    <!-- CSS ayrıca faylda -->
+    <link rel="stylesheet" href="style.css">
     <!-- Firebase SDK-ları (versiya 8) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    
-    <style>
-        :root {
-            --primary-color: #6a11cb;
-            --secondary-color: #2575fc;
-            --background-color: #f0f2f5;
-            --card-bg-color: #ffffff;
-            --text-color: #333;
-            --light-text-color: #fff;
-            --shadow: 0 4px 12px rgba(0,0,0,0.1);
-            --border-radius: 12px;
-        }
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            overflow: hidden;
-        }
-        .app-header {
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            color: var(--light-text-color);
-            padding: 1.2rem 1rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            font-size: 1.6rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .main-content {
-            height: calc(100vh - 150px);
-            overflow-y: auto;
-            padding: 1rem;
-            box-sizing: border-box;
-        }
-        .slider-wrapper {
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
-        }
-        .slider {
-            display: flex;
-            width: 400%; 
-            height: 100%;
-            transition: transform 0.4s ease;
-        }
-        .page {
-            width: 25%;
-            height: 100%;
-            overflow-y: auto;
-            padding: 0 0.5rem;
-            box-sizing: border-box;
-        }
-        .card {
-            background: var(--card-bg-color);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 1.5rem;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 1.2rem;
-            color: var(--primary-color);
-        }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-        .submit-btn {
-            display: block;
-            width: 100%;
-            padding: 0.9rem;
-            border: none;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            color: var(--light-text-color);
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .submit-btn:hover { transform: translateY(-2px); }
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.2rem;
-            padding: 0 0.5rem;
-        }
-        .media-card {
-            background: var(--card-bg-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            padding: 0.8rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: transform 0.3s ease;
-            position: relative;
-        }
-        .media-card:hover { transform: translateY(-5px); }
-        .media-card video, .media-card iframe, .media-card audio {
-            width: 100%;
-            height: auto;
-            border-radius: var(--border-radius);
-            margin-bottom: 0.5rem;
-        }
-        .media-card video, .media-card iframe { min-height: 180px; }
-        .media-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin: 0.3rem 0;
-            color: var(--primary-color);
-            text-align: center;
-            word-wrap: break-word;
-            padding: 0 5px;
-        }
-        .delete-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: #ff4d4d;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            cursor: pointer;
-            font-size: 16px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .media-card:hover .delete-btn { opacity: 1; }
-        .nav-buttons {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            background: var(--card-bg-color);
-            border-top: 1px solid #ddd;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
-        }
-        .nav-btn {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: #888;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        .nav-btn i {
-            font-size: 1.2rem;
-            margin-bottom: 4px;
-        }
-        .nav-btn.active { color: var(--primary-color); }
-    </style>
 </head>
 <body>
     <header class="app-header">Video və Səs Paylaşma Platforması 📹🎶</header>
@@ -195,18 +18,22 @@
     <main class="main-content">
         <div class="slider-wrapper">
             <div class="slider" id="slider">
+                <!-- 1-ci səhifə -->
                 <div class="page">
                     <h2>Bütün Videolar</h2>
                     <div id="video-list-all" class="media-grid">Yüklənir...</div>
                 </div>
+                <!-- 2-ci səhifə -->
                 <div class="page">
                     <h2>Bütün Səslər</h2>
                     <div id="audio-list-all" class="media-grid">Yüklənir...</div>
                 </div>
+                <!-- 3-cü səhifə -->
                 <div class="page">
                     <h2>Mənim Fayllarım</h2>
                     <div id="my-files-list" class="media-grid">Yüklənir...</div>
                 </div>
+                <!-- 4-cü səhifə (Yükləmə formu) -->
                 <div class="page">
                     <div class="form-container card">
                         <h2>Yeni Fayl Yüklə</h2>
@@ -227,6 +54,7 @@
         </div>
     </main>
 
+    <!-- Navigasiya düymələri -->
     <div class="nav-buttons">
         <button class="nav-btn active" data-page="0"><i class="fas fa-video"></i><span>Videolar</span></button>
         <button class="nav-btn" data-page="1"><i class="fas fa-music"></i><span>Səslər</span></button>
@@ -234,158 +62,7 @@
         <button class="nav-btn" data-page="3"><i class="fas fa-upload"></i><span>Yükləmə</span></button>
     </div>
 
-    <script>
-        // --- Firebase Konfiqurasiyası (SİZİN MƏLUMATLARINIZ) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDWhvfx-7CiVGxdHFgR_kE2xVBAmOm6yrc",
-            authDomain: "device-streaming-36e0d1e5.firebaseapp.com",
-            databaseURL: "https://device-streaming-36e0d1e5-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "device-streaming-36e0d1e5",
-            storageBucket: "device-streaming-36e0d1e5.firebasestorage.app",
-            messagingSenderId: "565227952193",
-            appId: "1:565227952193:web:6a36fdf14e5800c2864ec0"
-        };
-        
-        // Firebase-i başlat
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // --- DOM Elementləri ---
-        const form = document.getElementById('file-form');
-        const slider = document.getElementById('slider');
-        const videoListAll = document.getElementById('video-list-all');
-        const audioListAll = document.getElementById('audio-list-all');
-        const myFilesList = document.getElementById('my-files-list');
-        const navButtonsContainer = document.querySelector('.nav-buttons');
-
-        // --- İstifadəçi ID ---
-        let currentUser = localStorage.getItem('userId');
-        if (!currentUser) {
-            currentUser = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            localStorage.setItem('userId', currentUser);
-        }
-
-        // --- Funksiyalar ---
-        const isAudioUrl = (url) => /\.(mp3|wav|ogg|aac)$/i.test(url);
-        const isYouTubeUrl = (url) => /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(url);
-        
-        function getYouTubeEmbedUrl(url) {
-            const regExp = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/;
-            const match = url.match(regExp);
-            return match && match[1] ? `https://www.youtube.com/embed/${match[1]}` : null;
-        }
-
-        function createFileCard(fileData, fileId) {
-            const isAudio = isAudioUrl(fileData.url);
-            const isYouTube = isYouTubeUrl(fileData.url);
-            const isOwner = fileData.ownerId === currentUser;
-
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            
-            let mediaElement = '';
-            if (isAudio) {
-                mediaElement = `<audio controls src="${fileData.url}"></audio>`;
-            } else {
-                if (isYouTube) {
-                    const embedUrl = getYouTubeEmbedUrl(fileData.url);
-                    mediaElement = `<iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-                } else {
-                    mediaElement = `<video controls src="${fileData.url}"></video>`;
-                }
-            }
-
-            const deleteBtnHTML = isOwner ? `<button class="delete-btn" data-id="${fileId}">×</button>` : '';
-
-            card.innerHTML = `
-                ${mediaElement}
-                <h3 class="media-title">${fileData.title}</h3>
-                ${deleteBtnHTML}
-            `;
-            return card;
-        }
-
-        function renderFiles(filesObject) {
-            videoListAll.innerHTML = '';
-            audioListAll.innerHTML = '';
-            myFilesList.innerHTML = '';
-
-            if (!filesObject) {
-                 videoListAll.innerHTML = 'Heç bir video tapılmadı.';
-                 audioListAll.innerHTML = 'Heç bir səs faylı tapılmadı.';
-                 myFilesList.innerHTML = 'Heç bir faylınız yoxdur.';
-                return;
-            }
-
-            for (const fileId in filesObject) {
-                const fileData = filesObject[fileId];
-                const card = createFileCard(fileData, fileId);
-                
-                if (isAudioUrl(fileData.url)) {
-                    audioListAll.prepend(card.cloneNode(true));
-                } else {
-                    videoListAll.prepend(card.cloneNode(true));
-                }
-
-                if (fileData.ownerId === currentUser) {
-                    myFilesList.prepend(card);
-                }
-            }
-
-            if (videoListAll.innerHTML === '') videoListAll.innerHTML = 'Heç bir video tapılmadı.';
-            if (audioListAll.innerHTML === '') audioListAll.innerHTML = 'Heç bir səs faylı tapılmadı.';
-            if (myFilesList.innerHTML === '') myFilesList.innerHTML = 'Heç bir faylınız yoxdur.';
-        }
-        
-        function navigateToPage(pageIndex) {
-            slider.style.transform = `translateX(-${pageIndex * 25}%)`;
-            
-            const buttons = navButtonsContainer.querySelectorAll('.nav-btn');
-            buttons.forEach((btn, index) => {
-                btn.classList.toggle('active', index === pageIndex);
-            });
-        }
-
-        // --- Hadisə Dinləyiciləri (Event Listeners) ---
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const title = document.getElementById('title').value;
-            const url = document.getElementById('url').value;
-
-            const fileData = {
-                title,
-                url,
-                ownerId: currentUser,
-                createdAt: firebase.database.ServerValue.TIMESTAMP
-            };
-            
-            database.ref('files').push(fileData);
-
-            form.reset();
-            navigateToPage(2);
-        });
-
-        document.body.addEventListener('click', (e) => {
-            if (e.target.classList.contains('delete-btn')) {
-                const fileId = e.target.dataset.id;
-                if (confirm("Bu faylı silmək istədiyinizə əminsiniz?")) {
-                    database.ref('files/' + fileId).remove();
-                }
-            }
-
-            const navBtn = e.target.closest('.nav-btn');
-            if (navBtn) {
-                const pageIndex = parseInt(navBtn.dataset.page, 10);
-                navigateToPage(pageIndex);
-            }
-        });
-
-        database.ref('files').on('value', (snapshot) => {
-            const files = snapshot.val();
-            renderFiles(files);
-        });
-
-    </script>
+    <!-- JS ayrıca faylda -->
+    <script src="script.js"></script>
 </body>
 </html>
