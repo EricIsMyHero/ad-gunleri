@@ -23,7 +23,6 @@
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
-            /* Yalnız düymələr vasitəsilə keçid üçün əsas gövdənin sürüşməsinin qarşısını alırıq */
             overflow: hidden;
         }
 
@@ -41,22 +40,20 @@
 
         .main-content {
             height: calc(100vh - 150px);
-            /* ƏSAS DƏYİŞİKLİK: Sürüşməni tamamilə deaktiv edir */
             overflow-y: auto;
             padding: 1rem;
             box-sizing: border-box;
         }
         
-        /* Slider-in özündə sürüşmənin qarşısını alırıq */
         .slider-wrapper {
             width: 100%;
             height: 100%;
-            overflow-x: hidden; /* ƏSAS DƏYİŞİKLİK: Üfüqi sürüşməni ləğv edir */
+            overflow-x: hidden;
         }
         
         .slider {
             display: flex;
-            width: 300%;
+            width: 500%; /* 5 səhifə üçün 500% */
             transition: transform 0.4s ease;
         }
 
@@ -240,6 +237,34 @@
         <div class="slider-wrapper">
             <div class="slider" id="slider">
                 <div class="page">
+                    <div class="list-container">
+                        <h2>Ümumi Videolar</h2>
+                        <div id="video-list-all" class="video-grid"></div>
+                    </div>
+                </div>
+                
+                <div class="page">
+                    <div class="list-container">
+                        <h2>Ümumi Səslər</h2>
+                        <div id="audio-list-all" class="audio-grid"></div>
+                    </div>
+                </div>
+
+                <div class="page">
+                    <div class="list-container">
+                        <h2>Sənin Videoların</h2>
+                        <div id="video-list-mine" class="video-grid"></div>
+                    </div>
+                </div>
+
+                <div class="page">
+                    <div class="list-container">
+                        <h2>Sənin Səslərin</h2>
+                        <div id="audio-list-mine" class="audio-grid"></div>
+                    </div>
+                </div>
+                
+                <div class="page">
                     <div class="form-container card">
                         <h2>Yeni Fayl Yüklə</h2>
                         <form id="file-form">
@@ -255,47 +280,51 @@
                         </form>
                     </div>
                 </div>
-
-                <div class="page">
-                    <div class="list-container">
-                        <h2>Yüklənmiş Videolar</h2>
-                        <div id="video-list" class="video-grid"></div>
-                    </div>
-                </div>
-
-                <div class="page">
-                    <div class="list-container">
-                        <h2>Yüklənmiş Səslər</h2>
-                        <div id="audio-list" class="audio-grid"></div>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
 
     <div class="nav-buttons">
-        <button class="nav-btn active" id="btn-left">
-            <i class="fas fa-upload"></i>
-            <span>Yükləmə</span>
-        </button>
-        <button class="nav-btn" id="btn-center">
+        <button class="nav-btn active" id="btn-video-all">
             <i class="fas fa-video"></i>
             <span>Videolar</span>
         </button>
-        <button class="nav-btn" id="btn-right">
+        <button class="nav-btn" id="btn-audio-all">
             <i class="fas fa-music"></i>
             <span>Səslər</span>
+        </button>
+        <button class="nav-btn" id="btn-video-mine">
+            <i class="fas fa-user-video"></i>
+            <span>Səninki</span>
+        </button>
+        <button class="nav-btn" id="btn-audio-mine">
+            <i class="fas fa-headphones"></i>
+            <span>Səninki</span>
+        </button>
+        <button class="nav-btn" id="btn-upload">
+            <i class="fas fa-upload"></i>
+            <span>Yükləmə</span>
         </button>
     </div>
 
     <script>
         const form = document.getElementById('file-form');
-        const videoList = document.getElementById('video-list');
-        const audioList = document.getElementById('audio-list');
         const slider = document.getElementById('slider');
-        const btnLeft = document.getElementById('btn-left');
-        const btnCenter = document.getElementById('btn-center');
-        const btnRight = document.getElementById('btn-right');
+        const btnVideoAll = document.getElementById('btn-video-all');
+        const btnAudioAll = document.getElementById('btn-audio-all');
+        const btnVideoMine = document.getElementById('btn-video-mine');
+        const btnAudioMine = document.getElementById('btn-audio-mine');
+        const btnUpload = document.getElementById('btn-upload');
+
+        // Bütün siyahılar üçün elementlər
+        const videoListAll = document.getElementById('video-list-all');
+        const audioListAll = document.getElementById('audio-list-all');
+        const videoListMine = document.getElementById('video-list-mine');
+        const audioListMine = document.getElementById('audio-list-mine');
+
+        // İstifadəçi ID-si yaratmaq və ya mövcud olanı istifadə etmək
+        const currentUser = localStorage.getItem('userId') || `user_${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('userId', currentUser);
 
         let files = JSON.parse(localStorage.getItem('files') || '[]');
         files.forEach(addFileCard);
@@ -305,7 +334,13 @@
             const title = document.getElementById('title').value;
             const url = document.getElementById('url').value;
 
-            const fileData = { title, url };
+            const fileData = { 
+                id: Date.now(), // Hər fayl üçün unikal ID
+                title, 
+                url,
+                ownerId: currentUser
+            };
+
             files.push(fileData);
             localStorage.setItem('files', JSON.stringify(files));
 
@@ -313,9 +348,9 @@
             form.reset();
 
             if (isAudioUrl(url)) {
-                btnRight.click();
+                btnAudioMine.click();
             } else {
-                btnCenter.click();
+                btnVideoMine.click();
             }
         });
 
@@ -337,26 +372,28 @@
         }
 
         function addFileCard(fileData) {
+            const isAudio = isAudioUrl(fileData.url);
+            const isYouTube = isYouTubeUrl(fileData.url);
+            const isOwner = fileData.ownerId === currentUser;
+
             const card = document.createElement('div');
             card.classList.add('card');
             
-            const isAudio = isAudioUrl(fileData.url);
-            const isYouTube = isYouTubeUrl(fileData.url);
+            let mediaElement = '';
+            let titleClass = '';
 
             if (isAudio) {
                 card.classList.add('audio-card');
-                card.innerHTML = `
+                titleClass = 'audio-title';
+                mediaElement = `
                     <audio controls>
                         <source src="${fileData.url}">
                         Brauzeriniz audio dəstəkləmir.
                     </audio>
-                    <h3 class="audio-title">${fileData.title}</h3>
-                    <button class="delete-btn" aria-label="Səsi Sil">×</button>
                 `;
-                audioList.prepend(card);
             } else {
                 card.classList.add('video-card');
-                let mediaElement;
+                titleClass = 'video-title';
                 if (isYouTube) {
                     const embedUrl = getYouTubeEmbedUrl(fileData.url);
                     mediaElement = `<iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
@@ -368,42 +405,84 @@
                         </video>
                     `;
                 }
-
-                card.innerHTML = `
-                    ${mediaElement}
-                    <h3 class="video-title">${fileData.title}</h3>
-                    <button class="delete-btn" aria-label="Videonu Sil">×</button>
-                `;
-                videoList.prepend(card);
             }
 
-            card.querySelector('.delete-btn').addEventListener('click', () => {
-                files = files.filter(f => f.url !== fileData.url);
-                localStorage.setItem('files', JSON.stringify(files));
-                card.remove();
-            });
-        }
+            let deleteBtnHTML = isOwner ? `<button class="delete-btn" aria-label="Faylı Sil" data-id="${fileData.id}">×</button>` : '';
 
+            card.innerHTML = `
+                ${mediaElement}
+                <h3 class="${titleClass}">${fileData.title}</h3>
+                ${deleteBtnHTML}
+            `;
+            
+            // Hər iki siyahıya əlavə et
+            if (isAudio) {
+                audioListAll.prepend(card.cloneNode(true));
+                if (isOwner) audioListMine.prepend(card);
+            } else {
+                videoListAll.prepend(card.cloneNode(true));
+                if (isOwner) videoListMine.prepend(card);
+            }
+            
+            // Silmə düyməsinə klik funksiyasını əlavə et
+            if (isOwner) {
+                const deleteBtns = card.querySelectorAll('.delete-btn');
+                deleteBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const fileId = parseInt(btn.getAttribute('data-id'));
+                        files = files.filter(f => f.id !== fileId);
+                        localStorage.setItem('files', JSON.stringify(files));
+                        
+                        // Səhifələri yeniləməyə ehtiyac yoxdur, sadəcə elementləri silirik
+                        document.querySelector(`.video-card[data-id="${fileId}"]`)?.remove();
+                        document.querySelector(`.audio-card[data-id="${fileId}"]`)?.remove();
+
+                        // Həmçinin ümumi siyahıdan da silmək
+                        const allCards = document.querySelectorAll(`[data-id="${fileId}"]`);
+                        allCards.forEach(c => c.remove());
+                    });
+                });
+            }
+        }
+        
+        // Naviqasiya düymələri
         function setActiveButton(activeBtn, ...inactiveBtns) {
             activeBtn.classList.add('active');
             inactiveBtns.forEach(btn => btn.classList.remove('active'));
         }
 
-        btnLeft.addEventListener('click', () => {
-            slider.style.transform = "translateX(0)";
-            setActiveButton(btnLeft, btnCenter, btnRight);
+        btnVideoAll.addEventListener('click', () => {
+            slider.style.transform = "translateX(0%)";
+            setActiveButton(btnVideoAll, btnAudioAll, btnVideoMine, btnAudioMine, btnUpload);
+        });
+        btnAudioAll.addEventListener('click', () => {
+            slider.style.transform = "translateX(-20%)";
+            setActiveButton(btnAudioAll, btnVideoAll, btnVideoMine, btnAudioMine, btnUpload);
+        });
+        btnVideoMine.addEventListener('click', () => {
+            slider.style.transform = "translateX(-40%)";
+            setActiveButton(btnVideoMine, btnVideoAll, btnAudioAll, btnAudioMine, btnUpload);
+        });
+        btnAudioMine.addEventListener('click', () => {
+            slider.style.transform = "translateX(-60%)";
+            setActiveButton(btnAudioMine, btnVideoAll, btnAudioAll, btnVideoMine, btnUpload);
+        });
+        btnUpload.addEventListener('click', () => {
+            slider.style.transform = "translateX(-80%)";
+            setActiveButton(btnUpload, btnVideoAll, btnAudioAll, btnVideoMine, btnAudioMine);
         });
 
-        btnCenter.addEventListener('click', () => {
-            slider.style.transform = "translateX(-33.333%)";
-            setActiveButton(btnCenter, btnLeft, btnRight);
-        });
+        // Təkcə sahibinin görə biləcəyi üçün əlavə funksiyalar
+        function refreshLists() {
+            videoListAll.innerHTML = '';
+            audioListAll.innerHTML = '';
+            videoListMine.innerHTML = '';
+            audioListMine.innerHTML = '';
+            files.forEach(addFileCard);
+        }
 
-        btnRight.addEventListener('click', () => {
-            slider.style.transform = "translateX(-66.666%)";
-            setActiveButton(btnRight, btnLeft, btnCenter);
-        });
+        // Başlanğıcda bütün siyahıları yeniləyirik
+        refreshLists();
     </script>
 </body>
 </html>
- 
