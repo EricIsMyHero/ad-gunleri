@@ -137,22 +137,6 @@ h1 {
   z-index: 1;
 }
 
-footer {
-  margin-top: 80px;
-  padding: 20px;
-  background-color: #fff0f5;
-  color: #000;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-footer a {
-  color: #f48fb1;
-}
-
 #progress-container {
   background: #ffe6ec;
   border-radius: 10px;
