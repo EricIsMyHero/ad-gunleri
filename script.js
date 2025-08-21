@@ -51,7 +51,8 @@ function createFileCard(fileData, fileId) {
     } else {
         if (isYouTube) {
             const embedUrl = getYouTubeEmbedUrl(fileData.url);
-            mediaElement = `<iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-content; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            mediaElement = `<iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+
         } else {
             mediaElement = `<video controls src="${fileData.url}"></video>`;
         }
