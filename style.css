@@ -8,13 +8,15 @@
     --shadow: 0 4px 12px rgba(0,0,0,0.1);
     --border-radius: 12px;
 }
+
 body {
     font-family: 'Montserrat', sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
     margin: 0;
-    overflow: hidden; /* Bütün body üçün artıq sürüşməni ləğv edir */
+    overflow-x: hidden; /* Yalnız üfüqi sürüşməni bloklayır */
 }
+
 .app-header {
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
     color: var(--light-text-color);
@@ -26,36 +28,37 @@ body {
     top: 0;
     z-index: 100;
 }
+
 .main-content {
-    /* Başlıq və naviqasiya düymələri nəzərə alınaraq hündürlük tənzimlənir */
     height: calc(100vh - 150px); 
-    overflow-y: hidden; /* main-content-də vertikal sürüşməni ləğv edir */
     padding: 1rem;
     box-sizing: border-box;
-    display: flex; /* İçərisindəki slider-wrapper-i düzgün tənzimləmək üçün */
+    display: flex;
     flex-direction: column;
 }
+
 .slider-wrapper {
     width: 100%;
-    height: 100%; /* main-content-in qalan hündürlüyünü tutur */
+    height: 100%;
     overflow-x: hidden; /* Üfüqi sürüşməni gizlədir */
 }
+
 .slider {
     display: flex;
-    /* 5 səhifə olduğu üçün 500% genişlik */
     width: 500%; 
     height: 100%;
     transition: transform 0.4s ease;
 }
+
 .page {
-    /* 5 səhifə olduğu üçün hər səhifə 20% genişlikdə olmalıdır */
     width: 20%; 
     height: 100%;
-    overflow-y: auto; /* Hər səhifənin daxili məzmunu üçün vertikal sürüşmə */
+    overflow-y: auto; /* Hər səhifənin daxili sürüşməsi üçün */
     padding: 0 0.5rem;
     box-sizing: border-box;
-    flex-shrink: 0; /* Səhifələrin sıxılmamasını təmin edir */
+    flex-shrink: 0;
 }
+
 .card {
     background: var(--card-bg-color);
     padding: 1.5rem;
@@ -63,11 +66,13 @@ body {
     box-shadow: var(--shadow);
     margin-bottom: 1.5rem;
 }
+
 h2 {
     text-align: center;
     margin-bottom: 1.2rem;
     color: var(--primary-color);
 }
+
 .form-group { margin-bottom: 1rem; }
 .form-group label {
     display: block;
@@ -96,6 +101,7 @@ h2 {
     transition: transform 0.2s;
 }
 .submit-btn:hover { transform: translateY(-2px); }
+
 .media-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -149,6 +155,7 @@ h2 {
     justify-content: center;
 }
 .media-card:hover .delete-btn { opacity: 1; }
+
 .nav-buttons {
     position: fixed;
     bottom: 0;
@@ -189,18 +196,15 @@ h2 {
     max-width: 800px;
     margin: 20px auto;
 }
-
 .info-page h2, .info-page h3 {
     color: #333;
     margin-bottom: 15px;
 }
-
 .info-page p {
     color: #555;
     line-height: 1.6;
     margin-bottom: 15px;
 }
-
 .info-page .info-image {
     max-width: 100%;
     height: auto;
@@ -219,7 +223,6 @@ footer {
   z-index: 1;
   font-size: 16px;
 }
-
 footer a {
   color: #f48fb1;
 }
