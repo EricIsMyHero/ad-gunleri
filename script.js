@@ -4,7 +4,7 @@ const firebaseConfig = {
     authDomain: "device-streaming-36e0d1e5.firebaseapp.com",
     databaseURL: "https://device-streaming-36e0d1e5-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "device-streaming-36e0d1e5",
-    storageBucket: "device-streaming-36e0d1e5.firebasestorage.app",
+    storageBucket: "device-streaming-36e0d1e5.appspot.com", // düzəliş olundu
     messagingSenderId: "565227952193",
     appId: "1:565227952193:web:6a36fdf14e5800c2864ec0"
 };
@@ -97,9 +97,9 @@ function renderFiles(filesObject) {
         }
     }
 
-    if (videoListAll.innerHTML === '') videoListAll.innerHTML = 'Heç bir video tapılmadı.';
-    if (audioListAll.innerHTML === '') audioListAll.innerHTML = 'Heç bir səs faylı tapılmadı.';
-    if (myFilesList.innerHTML === '') myFilesList.innerHTML = 'Heç bir faylınız yoxdur.';
+    if (!videoListAll.hasChildNodes()) videoListAll.innerHTML = 'Heç bir video tapılmadı.';
+    if (!audioListAll.hasChildNodes()) audioListAll.innerHTML = 'Heç bir səs faylı tapılmadı.';
+    if (!myFilesList.hasChildNodes()) myFilesList.innerHTML = 'Heç bir faylınız yoxdur.';
 }
 
 function navigateToPage(pageIndex) {
@@ -115,7 +115,7 @@ function navigateToPage(pageIndex) {
 }
 
 // --- Hadisə Dinləyiciləri ---
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const title = document.getElementById('title').value;
     const url = document.getElementById('url').value;
@@ -127,10 +127,14 @@ form.addEventListener('submit', (e) => {
         createdAt: firebase.database.ServerValue.TIMESTAMP
     };
     
-    database.ref('files').push(fileData);
-
-    form.reset();
-    navigateToPage(2); // Fayl yükləndikdən sonra "Mənim Fayllarım" səhifəsinə keçir
+    try {
+        await database.ref('files').push(fileData);
+        form.reset();
+        navigateToPage(2); // Fayl yükləndikdən sonra "Mənim Fayllarım" səhifəsinə keçir
+    } catch (err) {
+        // Xəta baş verdikdə istifadəçiyə bildiriş verə bilərsiniz
+        console.error("Fayl göndərilmədi:", err);
+    }
 });
 
 document.body.addEventListener('click', (e) => {
