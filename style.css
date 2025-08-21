@@ -9,14 +9,23 @@
     --border-radius: 12px;
 }
 
+/* Reset və əsas stillər */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 body {
+    min-height: 100vh;
     font-family: 'Montserrat', sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
-    margin: 0;
-    overflow-x: hidden; /* Yalnız üfüqi sürüşməni bloklayır */
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Header */
 .app-header {
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
     color: var(--light-text-color);
@@ -29,8 +38,11 @@ body {
     z-index: 100;
 }
 
+/* Main Content və Slider */
 .main-content {
-    height: calc(100vh - 150px); 
+    flex: 1 0 auto;
+    min-height: 0;
+    height: calc(100vh - 150px); /* header və footer çıxılır */
     padding: 1rem;
     box-sizing: border-box;
     display: flex;
@@ -38,41 +50,50 @@ body {
 }
 
 .slider-wrapper {
-    width: 100%;
+    flex: 1 1 auto;
     height: 100%;
-    overflow-x: hidden; /* Üfüqi sürüşməni gizlədir */
+    min-height: 0;
+    overflow-x: hidden;
+    position: relative;
 }
 
 .slider {
     display: flex;
-    width: 500%; 
+    width: 500%;
     height: 100%;
-    transition: transform 0.4s ease;
+    min-height: 0;
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    will-change: transform;
 }
 
+/* Səhifələr */
 .page {
-    width: 20%; 
+    width: 20%;
     height: 100%;
-    overflow-y: auto; /* Hər səhifənin daxili sürüşməsi üçün */
+    min-height: 0;
+    overflow-y: auto;
     padding: 0 0.5rem;
     box-sizing: border-box;
     flex-shrink: 0;
-}
-
-.card {
-    background: var(--card-bg-color);
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
 h2 {
     text-align: center;
-    margin-bottom: 1.2rem;
+    margin: 1.2rem 0 1rem 0;
     color: var(--primary-color);
 }
+h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.8rem;
+}
 
+/* Form */
+.form-container.card {
+    max-width: 450px;
+    margin: 0 auto;
+}
 .form-group { margin-bottom: 1rem; }
 .form-group label {
     display: block;
@@ -102,12 +123,14 @@ h2 {
 }
 .submit-btn:hover { transform: translateY(-2px); }
 
+/* Media Grid və Kartlar */
 .media-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1.2rem;
     padding: 0 0.5rem;
 }
+
 .media-card {
     background: var(--card-bg-color);
     border-radius: var(--border-radius);
@@ -120,20 +143,26 @@ h2 {
     position: relative;
 }
 .media-card:hover { transform: translateY(-5px); }
-.media-card video, .media-card iframe, .media-card audio {
+
+.media-card video,
+.media-card iframe,
+.media-card audio {
     width: 100%;
-    height: auto;
     border-radius: var(--border-radius);
     margin-bottom: 0.5rem;
+    background: #000;
 }
-.media-card video, .media-card iframe { min-height: 180px; }
+.media-card video,
+.media-card iframe {
+    min-height: 180px;
+}
 .media-title {
     font-size: 1.05rem;
     font-weight: 600;
     margin: 0.3rem 0;
     color: var(--primary-color);
     text-align: center;
-    word-wrap: break-word;
+    word-break: break-word;
     padding: 0 5px;
 }
 .delete-btn {
@@ -156,6 +185,7 @@ h2 {
 }
 .media-card:hover .delete-btn { opacity: 1; }
 
+/* Nav Buttons */
 .nav-buttons {
     position: fixed;
     bottom: 0;
@@ -167,6 +197,7 @@ h2 {
     background: var(--card-bg-color);
     border-top: 1px solid #ddd;
     box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+    z-index: 100;
 }
 .nav-btn {
     flex: 1;
@@ -180,6 +211,7 @@ h2 {
     font-size: 0.8rem;
     cursor: pointer;
     transition: color 0.3s ease;
+    padding: 5px 0;
 }
 .nav-btn i {
     font-size: 1.2rem;
@@ -213,16 +245,69 @@ h2 {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
+/* Card */
+.card {
+    background: var(--card-bg-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+/* Footer */
 footer {
-  margin-top: 80px;
-  padding: 20px;
-  background-color: #fff0f5;
-  color: #000;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  font-size: 16px;
+    margin-top: 80px;
+    padding: 20px 8px;
+    background-color: #fff0f5;
+    color: #000;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    font-size: 16px;
 }
 footer a {
-  color: #f48fb1;
+    color: #f48fb1;
+    text-decoration: underline;
+}
+
+/* Scrollbar stilləri (istəyə bağlı) */
+.page::-webkit-scrollbar {
+    width: 8px;
+    background: #e0e0e0;
+}
+.page::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+/* Mobil uyumluluq */
+@media (max-width: 900px) {
+    .media-grid {
+        grid-template-columns: 1fr;
+    }
+    .info-page .info-content {
+        padding: 10px;
+    }
+}
+@media (max-width: 600px) {
+    .main-content {
+        padding: 0.5rem;
+        height: calc(100vh - 120px);
+    }
+    .slider {
+        width: 500%;
+    }
+    .page {
+        padding: 0 2px;
+    }
+    .media-card {
+        padding: 0.5rem;
+    }
+    .form-container.card {
+        padding: 1rem;
+    }
+    footer {
+        margin-top: 60px;
+        font-size: 14px;
+    }
 }
